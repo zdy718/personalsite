@@ -1,0 +1,38 @@
+---
+import { profile } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <p>© {year} {profile.name} · Made in Lincoln, Nebraska</p>
+    <ul>
+      <li><a href={`mailto:${profile.email}`}>Email</a></li>
+      <li><a href={profile.github} rel="me noopener" target="_blank">GitHub</a></li>
+      <li><a href={profile.linkedin} rel="me noopener" target="_blank">LinkedIn</a></li>
+      <li><a href={profile.resume} target="_blank" rel="noopener">Resume (PDF)</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 2px solid var(--line);
+    background: var(--soft);
+    padding-block: var(--s6);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s4) var(--s6);
+    justify-content: space-between;
+    align-items: center;
+  }
+  p { margin: 0; }
+  ul { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); margin: 0; padding: 0; }
+  a { display: inline-block; padding-block: 12px; color: var(--ink); }
+  a:hover { color: var(--accent); }
+</style>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found | Zi-Dane Yan" description="This page doesn’t exist. Head back to Zi-Dane Yan’s homepage.">
+  <section class="container nf">
+    <p class="eyebrow">404</p>
+    <h1>This page took a different route.</h1>
+    <p>The link may be old, or the page may have moved. These should get you back on track:</p>
+    <ul>
+      <li><a class="btn btn-primary" href="/">Homepage</a></li>
+      <li><a class="btn btn-secondary" href="/#work">Projects</a></li>
+      <li><a class="btn btn-secondary" href="/#education">Education</a></li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { padding-block: var(--s9); max-width: 760px; margin-inline: auto; }
+  .nf > p:not(.eyebrow) { color: var(--muted); margin: var(--s4) 0 var(--s6); }
+  ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s3); }
+</style>

@@ -1,0 +1,62 @@
+---
+import { profile } from '../data/site';
+---
+
+<div class="contact">
+  <div class="email-row">
+    <a class="email" href={`mailto:${profile.email}`}>{profile.email}</a>
+    <button type="button" class="btn btn-secondary copy" data-copy={profile.email} hidden>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="6.5" y="6.5" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 4.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 4 13.5h.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span data-copy-label>Copy email</span>
+    </button>
+    <span class="status" role="status" aria-live="polite" data-copy-status></span>
+  </div>
+
+  <ul class="links">
+    <li><a class="btn btn-primary" href={`mailto:${profile.email}`}>Email me</a></li>
+    <li><a class="btn btn-secondary" href={profile.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+    <li><a class="btn btn-secondary" href={profile.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+    <li><a class="btn btn-secondary" href={profile.resume} target="_blank" rel="noopener">Resume (PDF)<span class="visually-hidden">, opens in a new tab</span></a></li>
+    <li><a class="dl" href={profile.resume} download="Zi-Dane-Yan-Resume.pdf">Download resume</a></li>
+  </ul>
+</div>
+
+<style>
+  .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-bottom: var(--s6); }
+  .email {
+    font: 700 clamp(1.25rem, 1rem + 1.4vw, 1.875rem)/1.2 var(--font-head);
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    word-break: break-all;
+    user-select: all;
+  }
+  .email:hover { color: var(--primary); }
+  .copy { min-height: 40px; padding: 8px 14px; font-size: 0.875rem; }
+  .status { font-size: 0.875rem; color: var(--primary); font-weight: 600; min-width: 1px; }
+  .links { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin: 0; padding: 0; }
+  .dl { display: inline-flex; align-items: center; min-height: 44px; padding-inline: var(--s2); font-weight: 600; font-size: 0.9375rem; }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  const label = btn?.querySelector<HTMLElement>('[data-copy-label]');
+  if (btn && status && label && navigator.clipboard) {
+    btn.hidden = false;
+    let timer: number | undefined;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy!);
+        label.textContent = 'Copied';
+        status.textContent = 'Email address copied to clipboard.';
+      } catch {
+        status.textContent = 'Couldn’t copy automatically. The address is selectable — copy it manually.';
+      }
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        label.textContent = 'Copy email';
+        status.textContent = '';
+      }, 4000);
+    });
+  }
+</script>

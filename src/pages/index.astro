@@ -1,0 +1,342 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ExperienceList from '../components/ExperienceList.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import ProjectPreview, { type PreviewProject } from '../components/interactive/ProjectPreview';
+import { capabilities, clientWork, education, profile, projects } from '../data/site';
+import universeImg from '../assets/work/universe-map.png';
+import stuntImg from '../assets/work/stunt-double.png';
+
+const images = { 'universe-map': universeImg, 'stunt-double': stuntImg } as const;
+const [um, sd] = projects;
+
+async function poster(img: ImageMetadata, alt: string) {
+  const widths = [480, 800, 1200];
+  const out = await Promise.all(widths.map((w) => getImage({ src: img, width: w, format: 'webp' })));
+  return {
+    src: out[1].src,
+    srcset: out.map((o, i) => `${o.src} ${widths[i]}w`).join(', '),
+    width: Number(out[1].attributes.width),
+    height: Number(out[1].attributes.height),
+    alt,
+  };
+}
+
+const previews: PreviewProject[] = [
+  {
+    id: 'universe',
+    title: um.title,
+    blurb: 'A 3D catalog of 169,000+ stars, planets, and galaxies.',
+    poster: await poster(universeImg, um.imageAlt),
+    demoUrl: um.demoUrl,
+    exploreLabel: 'Explore preview',
+  },
+  {
+    id: 'stunt',
+    title: sd.title,
+    blurb: 'A browser game with five movie-inspired levels.',
+    poster: await poster(stuntImg, sd.imageAlt),
+    demoUrl: sd.demoUrl,
+    exploreLabel: 'Try a quick jump',
+  },
+];
+---
+
+<BaseLayout
+  title="Zi-Dane Yan | Software Engineer"
+  description="Zi-Dane Yan is a computer science student at the University of Nebraska–Lincoln, graduating in December 2026, who builds web apps, wearable prototypes, and interactive browser projects."
+>
+  <section class="hero container" aria-labelledby="hero-title">
+    <div class="hero-text">
+      <p class="eyebrow">{profile.name} · {profile.role}</p>
+      <h1 id="hero-title">I build useful software and <span class="hl">interactive things.</span></h1>
+      <p class="lede">
+        I’m Zi-Dane, a computer science student at the University of Nebraska–Lincoln, graduating in
+        December 2026. My work spans web apps, wearable prototypes, and browser-based experiments.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#work">See my projects</a>
+        <a class="btn btn-secondary" href={profile.resume} target="_blank" rel="noopener">
+          View resume<span class="visually-hidden"> (PDF, opens in a new tab)</span>
+        </a>
+      </div>
+      <p class="status"><span class="led" aria-hidden="true"></span> B.S. Computer Science · Class of December 2026</p>
+    </div>
+    <div class="hero-preview">
+      <ProjectPreview client:load projects={previews} />
+    </div>
+  </section>
+
+  <div class="stripes" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <section id="work" class="section container" aria-labelledby="work-title">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">01 · Work</p>
+      <h2 id="work-title">Projects</h2>
+      <p>Two independent projects I designed and built end to end, plus client work from UNL Senior Design.</p>
+    </div>
+
+    <div class="work-grid">
+      <ProjectCard project={um} image={images['universe-map']} barClass="teal" />
+      <ProjectCard project={sd} image={images['stunt-double']} barClass="rose" />
+    </div>
+
+    <div class="window client" data-reveal>
+      <div class="window-bar">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Client work · UNL Senior Design</span>
+      </div>
+      <ul class="client-list">
+        {clientWork.map((c) => (
+          <li>
+            <div class="client-top">
+              <h3>{c.name}</h3>
+              <span class="chip">{c.dates}</span>
+            </div>
+            <p>{c.summary}</p>
+            <p class="client-stack">{c.stack}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="education" class="section container" aria-labelledby="edu-title">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">02 · Education</p>
+      <h2 id="edu-title">Education</h2>
+    </div>
+
+    <div class="edu" data-reveal>
+      <div class="window degree">
+        <div class="window-bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>diploma.txt</span>
+        </div>
+        <div class="degree-body">
+          <p class="grad-badge">Graduating {education.graduation}</p>
+          <h3>{education.degree}</h3>
+          <p class="minor">{education.minor}</p>
+          <dl>
+            <div><dt>School</dt><dd>{education.school}</dd></div>
+            <div><dt>Location</dt><dd>{education.location}</dd></div>
+            <div><dt>Dates</dt><dd>{education.dates}</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="edu-side">
+        <h3 class="side-title">Alongside my degree</h3>
+        <ul class="highlights">
+          {education.highlights.map((h) => (
+            <li>
+              <p class="h-title">{h.title}</p>
+              <p class="h-detail">{h.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="section container" aria-labelledby="xp-title">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">03 · Experience</p>
+      <h2 id="xp-title">Experience</h2>
+      <p>
+        Teaching alongside client engagements. Aulick Industries and Mission Accomplished were client projects
+        delivered through the University of Nebraska–Lincoln Senior Design program.
+      </p>
+    </div>
+    <ExperienceList />
+  </section>
+
+  <section id="about" class="section container" aria-labelledby="about-title">
+    <div class="about" data-reveal>
+      <div class="about-text">
+        <p class="eyebrow">04 · About</p>
+        <h2 id="about-title">About</h2>
+        <p>
+          I like projects where the hard part is invisible to the person using them: merging astronomy catalogs so
+          one search box just works, or proving every level of a game can be beaten before anyone plays it. I’m
+          comfortable across the stack, SwiftUI and React interfaces, Python and FastAPI services, PostgreSQL
+          data, and I care about the details that make software feel trustworthy.
+        </p>
+        <p>
+          As a teaching assistant for Computer Systems Engineering, I lead weekly labs on C, GDB, and code review.
+          Helping students work through their own bugs every week has sharpened how I read and review code.
+        </p>
+      </div>
+      <div class="window skills">
+        <div class="window-bar teal">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>toolbox</span>
+        </div>
+        <div class="skills-body">
+          <h3 class="visually-hidden">What I work with</h3>
+          {capabilities.map((c) => (
+            <div class="skill-group">
+              <h4>{c.group}</h4>
+              <ul>
+                {c.items.map((i) => <li class="chip">{i}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section container" aria-labelledby="contact-title">
+    <div class="window contact" data-reveal>
+      <div class="window-bar rose">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>new_message</span>
+      </div>
+      <div class="contact-body">
+        <h2 id="contact-title">Have something in mind?</h2>
+        <p class="contact-lede">The best way to reach me is email. I’m happy to talk about roles, projects, or anything you saw here.</p>
+        <ContactLinks />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: var(--s6);
+    align-items: center;
+    padding-block: clamp(32px, 4vw, 64px) clamp(48px, 5vw, 72px);
+  }
+  .hl {
+    background: linear-gradient(transparent 62%, var(--mustard) 62%, var(--mustard) 92%, transparent 92%);
+    padding-inline: 2px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .lede {
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    color: var(--muted);
+    max-width: 52ch;
+    margin: var(--s5) 0 var(--s6);
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--s4); }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    margin: var(--s6) 0 0;
+    padding: 6px 14px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .led {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #3fa66b;
+    border: 1.5px solid var(--line);
+  }
+
+  .stripes { display: grid; gap: 0; border-block: 2px solid var(--line); }
+  .stripes i { display: block; height: 10px; }
+  .stripes i:nth-child(1) { background: var(--accent); }
+  .stripes i:nth-child(2) { background: var(--mustard); border-block: 2px solid var(--line); }
+  .stripes i:nth-child(3) { background: var(--primary); }
+
+  .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); align-items: stretch; }
+
+  .client { margin-top: var(--s6); }
+  .client-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .client-list li { padding: var(--s6); }
+  .client-list li + li { border-left: 2px dashed var(--border); }
+  .client-top { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+  .client-top h3 { font-size: 1.375rem; }
+  .client-list p { margin: var(--s3) 0 0; }
+  .client-stack { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); }
+
+  .edu { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s7); align-items: start; }
+  .degree-body { padding: var(--s6); }
+  .grad-badge {
+    display: inline-block;
+    margin: 0 0 var(--s4);
+    padding: 4px 12px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--mustard);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transform: rotate(-2deg);
+  }
+  .degree h3 { font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem); }
+  .minor { margin: var(--s2) 0 var(--s5); color: var(--muted); font-weight: 600; }
+  .degree dl { margin: 0; display: grid; gap: var(--s3); }
+  .degree dl div { display: grid; grid-template-columns: 90px 1fr; gap: var(--s3); padding-top: var(--s3); border-top: 2px dashed var(--border); }
+  .degree dt { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; color: var(--muted); padding-top: 2px; }
+  .degree dd { margin: 0; }
+  .side-title { font-size: 1.375rem; margin-bottom: var(--s4); }
+  .highlights { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s4); }
+  .highlights li {
+    position: relative;
+    padding: var(--s4) var(--s5) var(--s4) 52px;
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+  }
+  .highlights li::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 21px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--accent);
+  }
+  .highlights li:nth-child(2)::before { background: var(--mustard); }
+  .highlights li:nth-child(3)::before { background: var(--primary); }
+  .highlights li:nth-child(4)::before { background: var(--sky); }
+  .h-title { margin: 0; font-weight: 600; }
+  .h-detail { margin: 4px 0 0; color: var(--muted); font-size: 0.9375rem; }
+
+  .about { display: grid; grid-template-columns: 7fr 5fr; gap: var(--s8); align-items: start; }
+  .about-text h2 { margin-bottom: var(--s5); }
+  .about-text > p:not(.eyebrow) { max-width: 62ch; }
+  .skills-body { padding: var(--s6); }
+  .skill-group + .skill-group { margin-top: var(--s5); }
+  .skill-group h4 { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; color: var(--muted); margin-bottom: var(--s2); }
+  .skill-group ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2); }
+
+  .contact { background: var(--surface); }
+  .contact-body { padding: clamp(24px, 4vw, 56px); }
+  .contact h2 { font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem); }
+  .contact-lede { color: var(--muted); margin: var(--s4) 0 var(--s6); max-width: 56ch; }
+
+  @media (max-width: 960px) {
+    .about, .edu { grid-template-columns: 1fr; gap: var(--s7); }
+  }
+  @media (max-width: 899px) {
+    .work-grid, .client-list { grid-template-columns: 1fr; }
+    .client-list li + li { border-left: 0; border-top: 2px dashed var(--border); }
+  }
+  @media (max-width: 767px) {
+    .hero { grid-template-columns: 1fr; gap: var(--s7); }
+    .client-list li, .degree-body, .skills-body { padding: var(--s5); }
+    .degree dl div { grid-template-columns: 1fr; gap: 2px; }
+  }
+</style>

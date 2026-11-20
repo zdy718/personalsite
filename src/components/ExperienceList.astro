@@ -1,0 +1,69 @@
+---
+import { experience } from '../data/site';
+---
+
+<ol class="xp">
+  {experience.map((e) => (
+    <li class="item" data-reveal>
+      <div class="when">{e.dates}</div>
+      <div class="what">
+        <h3>
+          {e.role}
+          <span class="org">, {e.org}</span>
+        </h3>
+        <p class="ctx">
+          {e.context}
+          {e.label && <span class="chip">{e.label}</span>}
+        </p>
+        <ul>
+          {e.bullets.map((b) => <li>{b}</li>)}
+        </ul>
+        {e.link && <a href={e.link.href}>{e.link.text}</a>}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .xp { list-style: none; margin: 0; padding: 0; }
+  .xp { display: grid; gap: var(--s5); }
+  .item {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: var(--s5);
+    padding: var(--s6);
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+  }
+  .when {
+    align-self: start;
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: var(--soft);
+  }
+  h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
+  .org { font-weight: 600; color: var(--muted); }
+  .ctx {
+    font-family: var(--font-mono);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s3);
+    margin: var(--s2) 0 var(--s3);
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  ul { margin: 0; padding-left: 1.15em; max-width: 68ch; }
+  li li { margin-bottom: 6px; }
+  li li::marker { color: var(--accent); }
+  @media (max-width: 767px) {
+    .item { grid-template-columns: 1fr; gap: var(--s3); padding: var(--s5); }
+  }
+</style>

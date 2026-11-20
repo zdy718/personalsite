@@ -1,0 +1,78 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Project } from '../data/site';
+
+interface Props {
+  project: Project;
+  image: ImageMetadata;
+  barClass?: string;
+}
+
+const { project: p, image, barClass = '' } = Astro.props;
+---
+
+<article class="window card" data-reveal>
+  <div class:list={['window-bar', barClass]}>
+    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span aria-hidden="true">{p.id}.exe</span>
+  </div>
+  <div class="media">
+    <Picture
+      src={image}
+      alt={p.imageAlt}
+      formats={['avif', 'webp']}
+      widths={[480, 800, 1200]}
+      sizes="(min-width: 1120px) 540px, (min-width: 900px) 46vw, 100vw"
+      loading="lazy"
+    />
+  </div>
+  <div class="body">
+    <p class="type">Personal project</p>
+    <h3>{p.title}</h3>
+    <p class="tagline">{p.tagline}</p>
+    <p class="desc">{p.description}</p>
+    <ul class="stack" aria-label="Built with">
+      {p.stack.map((s) => <li class="chip">{s}</li>)}
+    </ul>
+    <div class="actions">
+      <a class="btn btn-primary" href={p.demoUrl} target="_blank" rel="noopener">
+        Live demo<span class="visually-hidden">: {p.title} (opens in a new tab)</span>
+      </a>
+      <a class="btn btn-secondary" href={p.sourceUrl} target="_blank" rel="noopener">
+        GitHub<span class="visually-hidden">: {p.title} source (opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card { display: flex; flex-direction: column; }
+  .media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0b0e1a;
+    border-bottom: 2px solid var(--line);
+  }
+  .media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 200ms var(--ease);
+  }
+  .card:hover .media :global(img) { transform: scale(1.02); }
+  .body { padding: var(--s6); display: flex; flex-direction: column; flex: 1; }
+  .type {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 0 0 var(--s2);
+  }
+  .tagline { font-weight: 600; margin: var(--s2) 0 var(--s3); }
+  .desc { color: var(--muted); margin: 0 0 var(--s4); }
+  .stack { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; padding: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: auto; padding-top: var(--s5); }
+  @media (max-width: 767px) { .body { padding: var(--s5); } }
+  @media (prefers-reduced-motion: reduce) { .card:hover .media :global(img) { transform: none; } }
+</style>
