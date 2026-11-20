@@ -13,4 +13,5 @@ export default defineConfig({
   trailingSlash: 'never',
   build: { format: 'file' },
   integrations: [react(), sitemap()],
+  devToolbar: { enabled: false },
 });

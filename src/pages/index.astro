@@ -71,9 +71,45 @@ const previews: PreviewProject[] = [
 
   <div class="stripes" aria-hidden="true"><i></i><i></i><i></i></div>
 
+  <section id="about" class="section container" aria-labelledby="about-title">
+    <div class="about" data-reveal>
+      <div class="about-text">
+        <p class="eyebrow">01 · About</p>
+        <h2 id="about-title">About</h2>
+        <p>
+          I like projects where the hard part is invisible to the person using them: merging astronomy catalogs so
+          one search box just works, or proving every level of a game can be beaten before anyone plays it. I’m
+          comfortable across the stack, SwiftUI and React interfaces, Python and FastAPI services, PostgreSQL
+          data, and I care about the details that make software feel trustworthy.
+        </p>
+        <p>
+          As a teaching assistant for Computer Systems Engineering, I lead weekly labs on C, GDB, and code review.
+          Helping students work through their own bugs every week has sharpened how I read and review code.
+        </p>
+      </div>
+      <div class="window skills">
+        <div class="window-bar teal">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>toolbox</span>
+        </div>
+        <div class="skills-body">
+          <h3 class="visually-hidden">What I work with</h3>
+          {capabilities.map((c) => (
+            <div class="skill-group">
+              <h4>{c.group}</h4>
+              <ul>
+                {c.items.map((i) => <li class="chip">{i}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="work" class="section container" aria-labelledby="work-title">
     <div class="section-head" data-reveal>
-      <p class="eyebrow">01 · Work</p>
+      <p class="eyebrow">02 · Work</p>
       <h2 id="work-title">Projects</h2>
       <p>Two independent projects I designed and built end to end, plus client work from UNL Senior Design.</p>
     </div>
@@ -105,7 +141,7 @@ const previews: PreviewProject[] = [
 
   <section id="education" class="section container" aria-labelledby="edu-title">
     <div class="section-head" data-reveal>
-      <p class="eyebrow">02 · Education</p>
+      <p class="eyebrow">03 · Education</p>
       <h2 id="edu-title">Education</h2>
     </div>
 
@@ -143,7 +179,7 @@ const previews: PreviewProject[] = [
 
   <section id="experience" class="section container" aria-labelledby="xp-title">
     <div class="section-head" data-reveal>
-      <p class="eyebrow">03 · Experience</p>
+      <p class="eyebrow">04 · Experience</p>
       <h2 id="xp-title">Experience</h2>
       <p>
         Teaching alongside client engagements. Aulick Industries and Mission Accomplished were client projects
@@ -151,42 +187,6 @@ const previews: PreviewProject[] = [
       </p>
     </div>
     <ExperienceList />
-  </section>
-
-  <section id="about" class="section container" aria-labelledby="about-title">
-    <div class="about" data-reveal>
-      <div class="about-text">
-        <p class="eyebrow">04 · About</p>
-        <h2 id="about-title">About</h2>
-        <p>
-          I like projects where the hard part is invisible to the person using them: merging astronomy catalogs so
-          one search box just works, or proving every level of a game can be beaten before anyone plays it. I’m
-          comfortable across the stack, SwiftUI and React interfaces, Python and FastAPI services, PostgreSQL
-          data, and I care about the details that make software feel trustworthy.
-        </p>
-        <p>
-          As a teaching assistant for Computer Systems Engineering, I lead weekly labs on C, GDB, and code review.
-          Helping students work through their own bugs every week has sharpened how I read and review code.
-        </p>
-      </div>
-      <div class="window skills">
-        <div class="window-bar teal">
-          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span>toolbox</span>
-        </div>
-        <div class="skills-body">
-          <h3 class="visually-hidden">What I work with</h3>
-          {capabilities.map((c) => (
-            <div class="skill-group">
-              <h4>{c.group}</h4>
-              <ul>
-                {c.items.map((i) => <li class="chip">{i}</li>)}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
   </section>
 
   <section id="contact" class="section container" aria-labelledby="contact-title">
