@@ -18,6 +18,7 @@ export type Engagement = {
   bullets: string[];
   label?: string;
   link?: { href: string; text: string };
+  quest?: 'duck';
 };
 
 export const experience: Engagement[] = [
@@ -26,6 +27,7 @@ export const experience: Engagement[] = [
     org: 'University of Nebraska–Lincoln',
     context: 'CSCE 231, Computer Systems Engineering',
     dates: 'Aug 2025 – Present',
+    quest: 'duck',
     bullets: [
       'Lead weekly labs for 40+ students covering C programming, GDB debugging, and code review.',
       'Give line-by-line assignment feedback on correctness, readability, and efficiency.',

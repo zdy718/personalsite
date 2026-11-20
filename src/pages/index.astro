@@ -5,6 +5,8 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ExperienceList from '../components/ExperienceList.astro';
 import ContactLinks from '../components/ContactLinks.astro';
 import ProjectPreview, { type PreviewProject } from '../components/interactive/ProjectPreview';
+import Constellation from '../components/interactive/Constellation';
+import QuestSticker from '../components/QuestSticker.astro';
 import { capabilities, clientWork, education, profile, projects } from '../data/site';
 import universeImg from '../assets/work/universe-map.png';
 import stuntImg from '../assets/work/stunt-double.png';
@@ -86,6 +88,7 @@ const previews: PreviewProject[] = [
           As a teaching assistant for Computer Systems Engineering, I lead weekly labs on C, GDB, and code review.
           Helping students work through their own bugs every week has sharpened how I read and review code.
         </p>
+        <Constellation client:idle />
       </div>
       <div class="window skills">
         <div class="window-bar teal">
@@ -102,6 +105,9 @@ const previews: PreviewProject[] = [
               </ul>
             </div>
           ))}
+          <div class="skills-quest">
+            <QuestSticker quest="wall" label="Set a route" icon="🧗" tilt={3} color="sky" />
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +116,10 @@ const previews: PreviewProject[] = [
   <section id="work" class="section container" aria-labelledby="work-title">
     <div class="section-head" data-reveal>
       <p class="eyebrow">02 · Work</p>
-      <h2 id="work-title">Projects</h2>
+      <div class="head-row">
+        <h2 id="work-title">Projects</h2>
+        <QuestSticker quest="drawer" label="Open desk drawer" icon="🗄️" tilt={-4} color="rose" />
+      </div>
       <p>Two independent projects I designed and built end to end, plus client work from UNL Senior Design.</p>
     </div>
 
@@ -318,6 +327,8 @@ const previews: PreviewProject[] = [
   .about-text h2 { margin-bottom: var(--s5); }
   .about-text > p:not(.eyebrow) { max-width: 62ch; }
   .skills-body { padding: var(--s6); }
+  .skills-quest { display: flex; justify-content: flex-end; margin-top: var(--s4); }
+  .head-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s3) var(--s5); }
   .skill-group + .skill-group { margin-top: var(--s5); }
   .skill-group h4 { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; color: var(--muted); margin-bottom: var(--s2); }
   .skill-group ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2); }

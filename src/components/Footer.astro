@@ -1,5 +1,6 @@
 ---
 import { profile } from '../data/site';
+import Playground from './interactive/Playground';
 const year = new Date().getFullYear();
 ---
 
@@ -14,6 +15,7 @@ const year = new Date().getFullYear();
     </ul>
   </div>
 </footer>
+<Playground client:only="react" />
 
 <style>
   .site-footer {

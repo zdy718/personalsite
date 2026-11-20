@@ -1,0 +1,67 @@
+---
+// A small tilted "sticker" that opens a side quest. Rendered as plain HTML;
+// the Playground island wires it up and reveals it once ready, so it never
+// shows as a dead button.
+interface Props {
+  quest: 'wall' | 'drawer' | 'duck';
+  label: string;
+  icon: string;
+  tilt?: number;
+  color?: 'mustard' | 'rose' | 'sky';
+  class?: string;
+}
+
+const { quest, label, icon, tilt = -3, color = 'mustard', class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['quest-sticker', color, className]}
+  data-quest={quest}
+  style={`--tilt: ${tilt}deg`}
+>
+  <span class="qs-icon" aria-hidden="true">{icon}</span>
+  {label}
+</button>
+
+<style>
+  .quest-sticker {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 4px 12px 4px 8px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    box-shadow: 2px 2px 0 var(--line);
+    color: var(--ink);
+    font: 700 0.75rem/1 var(--font-mono);
+    white-space: nowrap;
+    cursor: pointer;
+    transform: rotate(var(--tilt));
+    transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+  }
+  :global(html.quests-ready) .quest-sticker { display: inline-flex; }
+  .quest-sticker:hover { transform: rotate(0deg) translateY(-1px); box-shadow: 3px 3px 0 var(--line); }
+  .quest-sticker:active { transform: rotate(0deg) translate(1px, 1px); box-shadow: 1px 1px 0 var(--line); }
+  .mustard { background: var(--mustard); }
+  .rose { background: var(--rose); }
+  .sky { background: var(--sky); }
+  .qs-icon { font-size: 0.9375rem; line-height: 1; }
+  /* "Something new inside" dot once the secret drawer item is unlocked */
+  :global(html.quest-secret) .quest-sticker[data-quest='drawer'] { position: relative; }
+  :global(html.quest-secret) .quest-sticker[data-quest='drawer']::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    background: var(--accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quest-sticker, .quest-sticker:hover, .quest-sticker:active { transition: none; }
+  }
+</style>

@@ -115,3 +115,120 @@ test.describe('mobile navigation', () => {
     await expect(btn).toBeFocused();
   });
 });
+
+test.describe('side quests', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('climbing wall: a good route sends, a huge reach falls, Escape closes', async ({ page }) => {
+    await page.goto('/');
+    const trigger = page.getByRole('button', { name: 'Set a route' });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Set a route' });
+    await expect(dialog).toBeVisible();
+    const holds = dialog.locator('.cw-hold');
+    await holds.last().waitFor();
+    // Solve whatever random wall we got (BFS with the same reach rule as the game).
+    const path = await holds.evaluateAll((els) => {
+      const pts = els.map((e) => ({ x: parseFloat((e as HTMLElement).style.left), y: parseFloat((e as HTMLElement).style.top) }));
+      const d = (a: number, b: number) => Math.hypot((pts[a].x - pts[b].x) * 3, (pts[a].y - pts[b].y) * 4);
+      const prev = new Map<number, number>([[0, -1]]);
+      const q = [0];
+      while (q.length) {
+        const c = q.shift()!;
+        for (let n = 0; n < pts.length; n++) if (!prev.has(n) && d(c, n) <= 120) { prev.set(n, c); q.push(n); }
+      }
+      const out: number[] = [];
+      for (let c = pts.length - 1; c > 0; c = prev.get(c)!) out.unshift(c);
+      return out;
+    });
+    expect(path.length).toBeGreaterThan(0);
+    for (const i of path) await holds.nth(i).click();
+    await dialog.getByRole('button', { name: 'Climb', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Sent it', { timeout: 3000 });
+    await expect(dialog.getByText('Sends: 1')).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'New wall' }).click();
+    await holds.last().click();
+    await dialog.getByRole('button', { name: 'Climb', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Popped off', { timeout: 3000 });
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
+  test('desk drawer combines two items', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Open desk drawer' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('button', { name: 'Laptop' }).click();
+    await dialog.getByRole('button', { name: 'Coffee' }).click();
+    await expect(dialog).toContainText('2 a.m. commit');
+  });
+
+  test('constellation reveals a milestone', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('astro-island:has(.cn):not([ssr])').waitFor({ state: 'attached' });
+    await page.getByRole('button', { name: /Aug 2025: Became a TA/ }).click();
+    await expect(page.locator('.cn-card')).toContainText('Leading weekly CSCE 231 labs');
+  });
+
+  test('walls are randomized', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Set a route' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.locator('.cw-hold').last().waitFor();
+    const layout = () => dialog.locator('.cw-hold').evaluateAll((els) => els.map((e) => (e as HTMLElement).style.left).join());
+    const a = await layout();
+    await dialog.getByRole('button', { name: 'New wall' }).click();
+    expect(await layout()).not.toBe(a);
+  });
+
+  test('each sticker opens only its own game', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Set a route' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Set a route' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /duck|drawer/i })).toHaveCount(0);
+  });
+
+  test('rubber duck replies', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Ask the duck' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Describe your bug').fill('my loop runs forever');
+    await dialog.getByRole('button', { name: 'Tell' }).click();
+    await expect(dialog.locator('.rd-msg.duck').last()).toContainText(/qua+ck/i);
+    await dialog.getByLabel('Describe your bug').fill('oh wait, found it');
+    await dialog.getByRole('button', { name: 'Tell' }).click();
+    await expect(dialog.locator('.rd-msg.duck').last()).toContainText('You solved it yourself');
+  });
+
+  test('scrolling to the bottom unlocks the secret drawer item', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('html.quests-ready').waitFor({ state: 'attached' });
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(page.locator('.pg-toast')).toContainText('secret item');
+    await page.getByRole('button', { name: 'Open desk drawer' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('button', { name: 'Diploma' }).click();
+    await dialog.getByRole('button', { name: 'Laptop' }).click();
+    await expect(dialog).toContainText('Software Engineer, unlocked');
+  });
+
+  test('stickers stay hidden without JavaScript', async ({ browser }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await expect(page.locator('[data-quest]').first()).toBeHidden();
+    await ctx.close();
+  });
+
+  test('clapperboard counts takes', async ({ page }) => {
+    await page.goto('/');
+    const clap = page.getByRole('button', { name: /clapperboard/i });
+    await clap.click();
+    await clap.click();
+    await expect(page.locator('[data-take]')).toHaveText('TAKE 02');
+  });
+});

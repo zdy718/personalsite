@@ -11,7 +11,14 @@ const links = [
 
 <header class="site-header" data-header>
   <div class="container bar">
-    <a class="wordmark" href="/"><span class="badge" aria-hidden="true">ZY</span>{profile.name}</a>
+    <div class="brand">
+      <button type="button" class="badge" data-clap aria-label="ZY clapperboard: click for another take">
+        <span class="clapper" aria-hidden="true"></span>
+        <span aria-hidden="true">ZY</span>
+      </button>
+      <a class="wordmark" href="/">{profile.name}</a>
+      <span class="take" data-take role="status"></span>
+    </div>
 
     <button
       class="menu-btn"
@@ -60,10 +67,8 @@ const links = [
     min-height: 68px;
     gap: var(--s4);
   }
+  .brand { position: relative; display: flex; align-items: center; gap: 10px; }
   .wordmark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
     font-family: var(--font-head);
     font-weight: 800;
     font-size: 1.25rem;
@@ -71,22 +76,64 @@ const links = [
     text-decoration: none;
     padding-block: 8px;
   }
-  .wordmark:hover { color: var(--ink); }
+  .wordmark:hover { color: var(--accent); }
   .badge {
+    position: relative;
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 44px;
+    height: 40px;
+    margin-top: 4px;
+    padding: 0;
+    border-radius: 0 0 10px 10px;
     border: 2px solid var(--line);
     background: var(--mustard);
     box-shadow: 2px 2px 0 var(--line);
+    color: var(--ink);
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     font-weight: 700;
-    transition: transform 150ms var(--ease);
+    cursor: pointer;
   }
-  .wordmark:hover .badge { transform: rotate(-6deg); }
+  /* The clapper stick, hinged on the left */
+  .clapper {
+    position: absolute;
+    left: -2px;
+    top: -9px;
+    width: calc(100% + 4px);
+    height: 9px;
+    border: 2px solid var(--line);
+    border-radius: 3px 3px 0 0;
+    background: repeating-linear-gradient(-45deg, var(--line) 0 5px, var(--surface) 5px 10px);
+    transform-origin: 2px 100%;
+  }
+  .badge:hover .clapper { transform: rotate(-10deg); }
+  .badge.clap .clapper { animation: clap 340ms var(--ease); }
+  @keyframes clap {
+    0% { transform: rotate(-28deg); }
+    70% { transform: rotate(2deg); }
+    100% { transform: rotate(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge:hover .clapper, .badge.clap .clapper { transform: none; animation: none; }
+  }
+  .take {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 4px);
+    padding: 2px 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--surface);
+    font: 700 0.6875rem/1.5 var(--font-mono);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms var(--ease);
+  }
+  .take.show { opacity: 1; }
+  .take:empty { display: none; }
   .nav ul {
     list-style: none;
     margin: 0;
@@ -161,6 +208,26 @@ const links = [
 </style>
 
 <script>
+  // Clapperboard take counter (per-visitor, remembered when storage is available).
+  const clap = document.querySelector<HTMLButtonElement>('[data-clap]')!;
+  const take = document.querySelector<HTMLElement>('[data-take]')!;
+  let takes = 0;
+  try { takes = Number(localStorage.getItem('zy.takes')) || 0; } catch {}
+  let hide: number | undefined;
+  clap.addEventListener('click', () => {
+    takes += 1;
+    try { localStorage.setItem('zy.takes', String(takes)); } catch {}
+    clap.classList.remove('clap');
+    void clap.offsetWidth; // restart the animation
+    clap.classList.add('clap');
+    const n = String(takes).padStart(2, '0');
+    take.textContent =
+      takes % 10 === 0 ? `TAKE ${n} · That's a wrap!` : takes === 1 ? `TAKE ${n} · Action!` : `TAKE ${n}`;
+    take.classList.add('show');
+    window.clearTimeout(hide);
+    hide = window.setTimeout(() => take.classList.remove('show'), 1600);
+  });
+
   const header = document.querySelector<HTMLElement>('[data-header]')!;
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')!;
   const nav = document.querySelector<HTMLElement>('[data-nav]')!;

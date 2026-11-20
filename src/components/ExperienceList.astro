@@ -1,10 +1,14 @@
 ---
 import { experience } from '../data/site';
+import QuestSticker from './QuestSticker.astro';
 ---
 
 <ol class="xp">
   {experience.map((e) => (
     <li class="item" data-reveal>
+      {e.quest === 'duck' && (
+        <QuestSticker quest="duck" label="Ask the duck" icon="🦆" tilt={4} color="mustard" class="xp-sticker" />
+      )}
       <div class="when">{e.dates}</div>
       <div class="what">
         <h3>
@@ -28,6 +32,7 @@ import { experience } from '../data/site';
   .xp { list-style: none; margin: 0; padding: 0; }
   .xp { display: grid; gap: var(--s5); }
   .item {
+    position: relative;
     display: grid;
     grid-template-columns: 190px 1fr;
     gap: var(--s5);
@@ -48,6 +53,7 @@ import { experience } from '../data/site';
     border-radius: 999px;
     background: var(--soft);
   }
+  .item :global(.xp-sticker) { position: absolute; top: -16px; right: 24px; }
   h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
   .org { font-weight: 600; color: var(--muted); }
   .ctx {
