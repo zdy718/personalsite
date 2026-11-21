@@ -10,6 +10,7 @@ export type PreviewProject = {
   title: string;
   blurb: string;
   poster: { src: string; srcset?: string; width: number; height: number; alt: string };
+  icon: string;
   demoUrl: string;
   exploreLabel: string;
   bar?: 'teal' | 'rose';
@@ -18,129 +19,151 @@ export type PreviewProject = {
 type Props = { projects: PreviewProject[] };
 
 /**
- * Both projects open as cascaded windows on the hero desktop. The front window
- * is live; the one behind shows its poster and comes forward when clicked.
+ * Project shortcuts down the right edge of the hero desktop. Clicking one opens
+ * its preview window over the desktop; the close button or Escape puts it away.
  */
 export default function ProjectPreview({ projects }: Props) {
-  const [front, setFront] = useState(0);
-  const [live, setLive] = useState<PreviewProject['id'] | null>(null);
-  const explore = useRef<Record<string, HTMLButtonElement | null>>({});
-  const focusAfter = useRef<string | null>(null);
+  const [open, setOpen] = useState<PreviewProject['id'] | null>(null);
+  const [live, setLive] = useState(false);
+  const icons = useRef<Record<string, HTMLButtonElement | null>>({});
+  const explore = useRef<HTMLButtonElement | null>(null);
+  const win = useRef<HTMLElement | null>(null);
+  const lastOpen = useRef<string | null>(null);
+  const focusExplore = useRef(false);
 
-  // Move focus to the right Explore button after stopping a demo or switching windows.
+  const current = projects.find((p) => p.id === open) ?? null;
+
+  const show = (id: PreviewProject['id']) => {
+    setLive(false);
+    setOpen((o) => (o === id ? null : id));
+  };
+
+  const close = () => {
+    setLive(false);
+    setOpen(null);
+  };
+
+  const stop = () => {
+    focusExplore.current = true;
+    setLive(false);
+  };
+
+  // Focus the window when it opens; return focus to its icon when it closes.
   useEffect(() => {
-    if (live === null && focusAfter.current) {
-      explore.current[focusAfter.current]?.focus();
-      focusAfter.current = null;
+    if (open) {
+      lastOpen.current = open;
+      win.current?.focus();
+    } else if (lastOpen.current) {
+      icons.current[lastOpen.current]?.focus();
+      lastOpen.current = null;
     }
-  }, [live, front]);
+  }, [open]);
 
-  const stop = (id: string) => {
-    focusAfter.current = id;
-    setLive(null);
-  };
+  useEffect(() => {
+    if (!live && focusExplore.current) {
+      explore.current?.focus();
+      focusExplore.current = false;
+    }
+  }, [live]);
 
-  const raise = (i: number) => {
-    focusAfter.current = projects[i].id;
-    setLive(null);
-    setFront(i);
-  };
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
   return (
-    <div className="pv-stack">
-      {projects.map((p, i) => {
-        const isFront = i === front;
-        return (
-          // Clicking anywhere on the back window's visible edge also raises it (mouse
-          // convenience); the "Switch to" pill is the real, focusable control.
-          <div
-            key={p.id}
-            className={`pv-slot ${isFront ? 'is-front' : 'is-back'}`}
-            onClick={isFront ? undefined : () => raise(i)}
-          >
-            <section
-              className="pv window"
-              aria-label={p.title}
-              aria-hidden={isFront ? undefined : true}
-              {...(isFront ? {} : { inert: true })}
-            >
-              <div className={`window-bar ${p.bar ?? ''}`}>
-                <span className="dots" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span aria-hidden="true">{p.slug}.exe</span>
-              </div>
-
-              <div className="pv-stage">
-                {isFront && live === p.id ? (
-                  <Suspense fallback={<div className="pv-loading">Loading preview…</div>}>
-                    {p.id === 'universe' ? (
-                      <UniverseDemo onExit={() => stop(p.id)} />
-                    ) : (
-                      <StuntDemo onExit={() => stop(p.id)} />
-                    )}
-                  </Suspense>
-                ) : (
-                  <>
-                    <img
-                      className="pv-poster"
-                      src={p.poster.src}
-                      srcSet={p.poster.srcset}
-                      sizes="(min-width: 900px) 640px, 90vw"
-                      width={p.poster.width}
-                      height={p.poster.height}
-                      alt={p.poster.alt}
-                      decoding="async"
-                      fetchPriority={i === 0 ? 'high' : 'auto'}
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                    />
-                    <button
-                      type="button"
-                      className="pv-explore"
-                      ref={(el) => {
-                        explore.current[p.id] = el;
-                      }}
-                      onClick={() => setLive(p.id)}
-                    >
-                      <svg viewBox="0 0 20 20" aria-hidden="true" width="16" height="16">
-                        <path d="M6 4.5v11l9-5.5z" fill="currentColor" />
-                      </svg>
-                      {p.exploreLabel}
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div className="pv-foot">
-                <p className="pv-blurb">{p.blurb}</p>
-                <div className="pv-links">
-                  <a href={p.demoUrl} target="_blank" rel="noopener">
-                    Open full project<span className="visually-hidden">: {p.title} (opens in a new tab)</span>
-                    <svg viewBox="0 0 16 16" aria-hidden="true" width="12" height="12">
-                      <path d="M6 3h7v7M13 3 4 12" fill="none" stroke="currentColor" strokeWidth="1.6" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </section>
-
-            {!isFront && (
+    <>
+      <nav className="pv-icons" aria-label="Projects">
+        <ul>
+          {projects.map((p) => (
+            <li key={p.id}>
               <button
                 type="button"
-                className="pv-raise"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  raise(i);
+                className="pv-icon"
+                aria-expanded={open === p.id}
+                aria-controls="pv-window"
+                ref={(el) => {
+                  icons.current[p.id] = el;
                 }}
+                onClick={() => show(p.id)}
               >
-                Switch to {p.title}
+                <span className={`pv-icon-art ${p.bar ?? ''}`} aria-hidden="true">
+                  <img src={p.icon} alt="" width="64" height="64" decoding="async" />
+                </span>
+                <span className="pv-icon-label">{p.slug}.exe</span>
+                <span className="visually-hidden">: open {p.title} preview</span>
               </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {current && (
+        <section
+          id="pv-window"
+          className="pv window"
+          aria-label={current.title}
+          tabIndex={-1}
+          ref={win}
+          key={current.id}
+        >
+          <div className={`window-bar ${current.bar ?? ''}`}>
+            <span className="dots" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span aria-hidden="true">{current.slug}.exe</span>
+            <button type="button" className="pv-close" onClick={close}>
+              <span aria-hidden="true">×</span>
+              <span className="visually-hidden">Close {current.title}</span>
+            </button>
+          </div>
+
+          <div className="pv-stage">
+            {live ? (
+              <Suspense fallback={<div className="pv-loading">Loading preview…</div>}>
+                {current.id === 'universe' ? <UniverseDemo onExit={stop} /> : <StuntDemo onExit={stop} />}
+              </Suspense>
+            ) : (
+              <>
+                <img
+                  className="pv-poster"
+                  src={current.poster.src}
+                  srcSet={current.poster.srcset}
+                  sizes="(min-width: 900px) 720px, 92vw"
+                  width={current.poster.width}
+                  height={current.poster.height}
+                  alt={current.poster.alt}
+                  decoding="async"
+                />
+                <button type="button" className="pv-explore" ref={explore} onClick={() => setLive(true)}>
+                  <svg viewBox="0 0 20 20" aria-hidden="true" width="16" height="16">
+                    <path d="M6 4.5v11l9-5.5z" fill="currentColor" />
+                  </svg>
+                  {current.exploreLabel}
+                </button>
+              </>
             )}
           </div>
-        );
-      })}
-    </div>
+
+          <div className="pv-foot">
+            <p className="pv-blurb">{current.blurb}</p>
+            <div className="pv-links">
+              <a href={current.demoUrl} target="_blank" rel="noopener">
+                Open full project<span className="visually-hidden">: {current.title} (opens in a new tab)</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true" width="12" height="12">
+                  <path d="M6 3h7v7M13 3 4 12" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

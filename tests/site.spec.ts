@@ -41,19 +41,18 @@ test.describe('pages', () => {
 });
 
 test.describe('project preview', () => {
-  test('clicking the back window brings it forward without resizing the stack', async ({ page }) => {
+  test('project icons open and close their preview windows', async ({ page }) => {
     await page.goto('/');
-    const stack = page.locator('.pv-stack');
-    const front = page.getByRole('region', { name: 'Universe Map' });
-    await expect(front).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Stunt Double' })).toHaveCount(0); // back window is inert
-    const h1 = (await stack.boundingBox())!.height;
-    await page.getByRole('button', { name: 'Switch to Stunt Double' }).click();
+    const icons = page.getByRole('navigation', { name: 'Projects' });
+    await expect(page.locator('#pv-window')).toHaveCount(0);
+    await icons.getByRole('button', { name: /Universe Map/ }).click();
+    await expect(page.getByRole('region', { name: 'Universe Map' })).toBeVisible();
+    await icons.getByRole('button', { name: /Stunt Double/ }).click();
     await expect(page.getByRole('region', { name: 'Stunt Double' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Try a quick jump' })).toBeFocused();
-    await expect(page.getByRole('button', { name: 'Switch to Universe Map' })).toBeVisible();
-    const h2 = (await stack.boundingBox())!.height;
-    expect(Math.abs(h1 - h2)).toBeLessThan(2);
+    await expect(page.getByRole('region', { name: 'Universe Map' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#pv-window')).toHaveCount(0);
+    await expect(icons.getByRole('button', { name: /Stunt Double/ })).toBeFocused();
   });
 
   test('case study pages no longer exist', async ({ request }) => {
@@ -62,6 +61,7 @@ test.describe('project preview', () => {
 
   test('universe preview: selecting an object updates the details', async ({ page }) => {
     await page.goto('/');
+    await page.getByRole('navigation', { name: 'Projects' }).getByRole('button', { name: /Universe Map/ }).click();
     await page.getByRole('button', { name: 'Explore preview' }).click();
     await page.getByRole('button', { name: 'Andromeda Galaxy' }).click();
     await expect(page.locator('.um-card')).toContainText('2.5 million light-years');
@@ -72,7 +72,7 @@ test.describe('project preview', () => {
 
   test('stunt preview: play, jump with keyboard without scrolling the page', async ({ page, isMobile }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Switch to Stunt Double' }).click();
+    await page.getByRole('navigation', { name: 'Projects' }).getByRole('button', { name: /Stunt Double/ }).click();
     await page.getByRole('button', { name: 'Try a quick jump' }).click();
     await page.getByRole('button', { name: 'Play' }).click();
     const canvas = page.locator('.sd-canvas');
@@ -93,7 +93,7 @@ test.describe('project preview', () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const page = await ctx.newPage();
     await page.goto('/');
-    await expect(page.locator('.pv-poster').first()).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Education', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Have something in mind?' })).toBeVisible();
