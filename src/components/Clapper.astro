@@ -1,0 +1,95 @@
+---
+// The ZY clapperboard easter egg: click for another take. Lives in the hero
+// desktop's taskbar as its "start" button.
+---
+
+<span class="clap-wrap">
+  <button type="button" class="badge" data-clap aria-label="ZY clapperboard: click for another take">
+    <span class="clapper" aria-hidden="true"></span>
+    <span aria-hidden="true">ZY</span>
+  </button>
+  <span class="take" data-take role="status"></span>
+</span>
+
+<style>
+  .clap-wrap { position: relative; display: inline-flex; padding-top: 9px; }
+  .badge {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 30px;
+    padding: 0;
+    border-radius: 0 0 8px 8px;
+    border: 2px solid var(--line);
+    background: var(--mustard);
+    box-shadow: 2px 2px 0 var(--line);
+    color: var(--on-bright, var(--ink));
+    font: 700 0.75rem/1 var(--font-mono);
+    cursor: pointer;
+  }
+  /* The clapper stick, hinged on the left */
+  .clapper {
+    position: absolute;
+    left: -2px;
+    top: -9px;
+    width: calc(100% + 4px);
+    height: 9px;
+    border: 2px solid var(--line);
+    border-radius: 3px 3px 0 0;
+    background: repeating-linear-gradient(-45deg, var(--line) 0 5px, var(--surface) 5px 10px);
+    transform-origin: 2px 100%;
+  }
+  .badge:hover .clapper { transform: rotate(-10deg); }
+  .badge:global(.clap) .clapper { animation: clap 340ms var(--ease); }
+  @keyframes clap {
+    0% { transform: rotate(-28deg); }
+    70% { transform: rotate(2deg); }
+    100% { transform: rotate(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge:hover .clapper, .badge:global(.clap) .clapper { transform: none; animation: none; }
+  }
+  .take {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    z-index: 5;
+    padding: 2px 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--surface);
+    font: 700 0.6875rem/1.5 var(--font-mono);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms var(--ease);
+  }
+  .take:global(.show) { opacity: 1; }
+  .take:empty { display: none; }
+</style>
+
+<script>
+  // Take counter (per visitor, remembered when storage is available).
+  const clap = document.querySelector<HTMLButtonElement>('[data-clap]');
+  const take = document.querySelector<HTMLElement>('[data-take]');
+  if (clap && take) {
+    let takes = 0;
+    try { takes = Number(localStorage.getItem('zy.takes')) || 0; } catch {}
+    let hide: number | undefined;
+    clap.addEventListener('click', () => {
+      takes += 1;
+      try { localStorage.setItem('zy.takes', String(takes)); } catch {}
+      clap.classList.remove('clap');
+      void clap.offsetWidth; // restart the animation
+      clap.classList.add('clap');
+      const n = String(takes).padStart(2, '0');
+      take.textContent =
+        takes % 10 === 0 ? `TAKE ${n} · That's a wrap!` : takes === 1 ? `TAKE ${n} · Action!` : `TAKE ${n}`;
+      take.classList.add('show');
+      window.clearTimeout(hide);
+      hide = window.setTimeout(() => take.classList.remove('show'), 1600);
+    });
+  }
+</script>

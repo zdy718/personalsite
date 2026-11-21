@@ -4,21 +4,22 @@ import QuestSticker from './QuestSticker.astro';
 ---
 
 <ol class="xp">
-  {experience.map((e) => (
-    <li class="item" data-reveal>
+  {experience.map((e, i) => (
+    <li class="ticket" data-reveal>
       {e.quest === 'duck' && (
         <QuestSticker quest="duck" label="Ask the duck" icon="🦆" tilt={4} color="mustard" class="xp-sticker" />
       )}
-      <div class="when">{e.dates}</div>
+      <div class="stub">
+        <span class="admit" aria-hidden="true">Admit one</span>
+        <p class="when">{e.dates}</p>
+        <span class="no" aria-hidden="true">No. {String(i + 1).padStart(3, '0')}</span>
+      </div>
       <div class="what">
         <h3>
           {e.role}
           <span class="org">, {e.org}</span>
         </h3>
-        <p class="ctx">
-          {e.context}
-          {e.label && <span class="chip">{e.label}</span>}
-        </p>
+        {e.context && <p class="ctx">{e.context}</p>}
         <ul>
           {e.bullets.map((b) => <li>{b}</li>)}
         </ul>
@@ -29,39 +30,67 @@ import QuestSticker from './QuestSticker.astro';
 </ol>
 
 <style>
-  .xp { list-style: none; margin: 0; padding: 0; }
-  .xp { display: grid; gap: var(--s5); }
-  .item {
+  .xp { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s6); }
+
+  .ticket {
     position: relative;
     display: grid;
-    grid-template-columns: 190px 1fr;
-    gap: var(--s5);
-    padding: var(--s6);
+    grid-template-columns: 220px 1fr;
     background: var(--surface);
     border: 2px solid var(--line);
     border-radius: var(--radius-panel);
     box-shadow: var(--shadow);
   }
-  .when {
-    align-self: start;
-    justify-self: start;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
-    background: var(--soft);
+
+  /* Tear-off stub with a perforated edge */
+  .stub {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s2);
+    padding: var(--s5);
+    background: var(--mustard);
+    color: var(--on-bright, var(--ink));
+    border-right: 2px dashed var(--line);
+    border-radius: calc(var(--radius-panel) - 2px) 0 0 calc(var(--radius-panel) - 2px);
+    text-align: center;
   }
-  .item :global(.xp-sticker) { position: absolute; top: -16px; right: 24px; }
+  /* Notches punched out where the perforation meets the edges */
+  .stub::before,
+  .stub::after {
+    content: '';
+    position: absolute;
+    right: -14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--canvas);
+  }
+  .stub::before { top: -14px; clip-path: inset(50% 0 0 0); }
+  .stub::after { bottom: -14px; clip-path: inset(0 0 50% 0); }
+
+  .admit {
+    font: 700 0.6875rem/1 var(--font-mono);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding-bottom: var(--s2);
+    border-bottom: 2px solid currentColor;
+  }
+  .when {
+    margin: 0;
+    font: 700 0.9375rem/1.35 var(--font-mono);
+    text-wrap: balance;
+  }
+  .no { font: 700 0.6875rem/1 var(--font-mono); letter-spacing: 0.1em; opacity: 0.75; }
+
+  .what { padding: var(--s6); }
+  .ticket :global(.xp-sticker) { position: absolute; z-index: 2; top: -16px; right: 24px; }
   h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
   .org { font-weight: 600; color: var(--muted); }
   .ctx {
     font-family: var(--font-mono);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--s2) var(--s3);
     margin: var(--s2) 0 var(--s3);
     color: var(--muted);
     font-size: 0.8125rem;
@@ -69,7 +98,24 @@ import QuestSticker from './QuestSticker.astro';
   ul { margin: 0; padding-left: 1.15em; max-width: 68ch; }
   li li { margin-bottom: 6px; }
   li li::marker { color: var(--accent); }
+
   @media (max-width: 767px) {
-    .item { grid-template-columns: 1fr; gap: var(--s3); padding: var(--s5); }
+    .ticket { grid-template-columns: 1fr; }
+    .stub {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--s4) var(--s5);
+      border-right: 0;
+      border-bottom: 2px dashed var(--line);
+      border-radius: calc(var(--radius-panel) - 2px) calc(var(--radius-panel) - 2px) 0 0;
+    }
+    .admit { padding-bottom: 0; border-bottom: 0; }
+    .stub::before,
+    .stub::after { top: auto; right: auto; bottom: -14px; }
+    .stub::before { left: -14px; clip-path: inset(0 0 0 50%); }
+    .stub::after { right: -14px; clip-path: inset(0 50% 0 0); }
+    .what { padding: var(--s5); }
   }
 </style>
