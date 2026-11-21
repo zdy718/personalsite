@@ -26,7 +26,7 @@ p{font-size:24px;color:#5E5246;margin-top:28px;line-height:1.45}
 .a{top:0;left:0;height:300px}.b{top:250px;left:70px;height:290px}
 </style></head><body>
 <div class="t"><div class="e"><i></i>Zi-Dane Yan · Software Engineer</div>
-<h1>I build useful software and <span>interactive things.</span></h1>
+<h1>I build useful software and <span>other things.</span></h1>
 <p>Computer science at UNL, graduating December 2026.</p></div>
 <div class="s"><img class="a" src="${img('src/assets/work/universe-map.png')}"><img class="b" src="${img('src/assets/work/stunt-double.png')}"></div>
 </body></html>`;
