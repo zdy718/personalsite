@@ -1,7 +1,6 @@
-@import '@fontsource/fraunces/latin-700.css';
-@import '@fontsource/fraunces/latin-800.css';
-@import '@fontsource/inter/latin-400.css';
-@import '@fontsource/inter/latin-600.css';
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource/shrikhand/latin-400.css';
+@import '@fontsource-variable/bricolage-grotesque/index.css';
 @import '@fontsource/space-mono/latin-400.css';
 @import '@fontsource/space-mono/latin-700.css';
 
@@ -21,11 +20,12 @@
   --line: #2a211b;
   --border: rgb(42 33 27 / 0.18);
 
-  --font-head: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
-  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Shrikhand', 'Fraunces Variable', ui-serif, Georgia, serif;
+  --font-head: 'Fraunces Variable', 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-body: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --fs-hero: clamp(2.5rem, 1.6rem + 3.6vw, 4.125rem);
+  --fs-hero: clamp(2.25rem, 1.5rem + 3vw, 3.625rem);
   --fs-h2: clamp(2rem, 1.55rem + 1.6vw, 2.75rem);
   --fs-h3: clamp(1.375rem, 1.25rem + 0.5vw, 1.625rem);
   --fs-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
@@ -42,6 +42,11 @@
   --max: 1120px;
   --gutter: 32px;
   --section-gap: clamp(64px, 5vw + 32px, 104px);
+
+  /* Film grain: dark specks multiplied onto the paper */
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.13 0 0 0 0 0.1 0 0 0 0.55 -0.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --grain-blend: multiply;
+  --grain-opacity: 0.35;
 }
 
 @media (max-width: 767px) {
@@ -50,7 +55,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 24px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
@@ -58,9 +63,6 @@ html { -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
 body {
   margin: 0;
   background-color: var(--canvas);
-  /* faint halftone dots, like old printed paper */
-  background-image: radial-gradient(rgb(42 33 27 / 0.07) 1px, transparent 1.2px);
-  background-size: 18px 18px;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--fs-body);
@@ -71,12 +73,20 @@ body {
 h1, h2, h3, h4 {
   font-family: var(--font-head);
   font-weight: 700;
+  /* Fraunces' soft, wonky 70s cut */
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
   line-height: 1.1;
   letter-spacing: -0.015em;
   margin: 0;
   text-wrap: balance;
 }
-h1 { font-size: var(--fs-hero); font-weight: 800; letter-spacing: -0.025em; }
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: 0;
+}
 h2 { font-size: var(--fs-h2); font-weight: 800; }
 h3 { font-size: var(--fs-h3); }
 p { margin: 0 0 1em; text-wrap: pretty; }
@@ -234,3 +244,40 @@ a:hover { color: var(--accent); }
   }
   .js [data-reveal].is-visible { opacity: 1; transform: none; }
 }
+
+/* Film grain over everything (decorative, never blocks clicks) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background-image: var(--grain-img);
+  background-size: 180px 180px;
+  mix-blend-mode: var(--grain-blend);
+  opacity: var(--grain-opacity);
+}
+
+/* Marquee divider: a slow "now showing" ticker */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  border-block: 2px solid var(--line);
+  background: var(--ink);
+  color: var(--mustard);
+  box-shadow: 0 -8px 0 var(--accent), 0 8px 0 var(--primary), 0 -10px 0 var(--line), 0 10px 0 var(--line);
+  margin-block: 10px;
+  font: 700 0.9375rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.marquee-track { display: inline-flex; padding-block: 13px; }
+.marquee-track span { padding-right: 0.6em; }
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track { animation: marquee 48s linear infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { display: flex; justify-content: center; width: 100%; }
+  .marquee-track span + span { display: none; }
+}
+@keyframes marquee { to { transform: translateX(-50%); } }

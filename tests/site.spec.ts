@@ -20,7 +20,6 @@ test.describe('pages', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Zi-Dane Yan | Software Engineer');
     await expect(page.getByRole('link', { name: 'See my projects' })).toBeInViewport();
-    await expect(page.getByText('graduating in December 2026')).toBeVisible();
     await expect(page.getByRole('link', { name: /View resume/ })).toBeInViewport();
   });
 
@@ -42,18 +41,18 @@ test.describe('pages', () => {
 });
 
 test.describe('project preview', () => {
-  test('tabs work with arrow keys and keep the panel height', async ({ page, isMobile }) => {
-    test.skip(isMobile, 'keyboard only');
+  test('clicking the back window brings it forward without resizing the stack', async ({ page }) => {
     await page.goto('/');
-    const tab1 = page.getByRole('tab', { name: 'Universe Map' });
-    const tab2 = page.getByRole('tab', { name: 'Stunt Double' });
-    const stage = page.locator('.pv');
-    const h1 = (await stage.boundingBox())!.height;
-    await tab1.focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(tab2).toBeFocused();
-    await expect(tab2).toHaveAttribute('aria-selected', 'true');
-    const h2 = (await stage.boundingBox())!.height;
+    const stack = page.locator('.pv-stack');
+    const front = page.getByRole('region', { name: 'Universe Map' });
+    await expect(front).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Stunt Double' })).toHaveCount(0); // back window is inert
+    const h1 = (await stack.boundingBox())!.height;
+    await page.getByRole('button', { name: 'Switch to Stunt Double' }).click();
+    await expect(page.getByRole('region', { name: 'Stunt Double' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Try a quick jump' })).toBeFocused();
+    await expect(page.getByRole('button', { name: 'Switch to Universe Map' })).toBeVisible();
+    const h2 = (await stack.boundingBox())!.height;
     expect(Math.abs(h1 - h2)).toBeLessThan(2);
   });
 
@@ -73,7 +72,7 @@ test.describe('project preview', () => {
 
   test('stunt preview: play, jump with keyboard without scrolling the page', async ({ page, isMobile }) => {
     await page.goto('/');
-    await page.getByRole('tab', { name: 'Stunt Double' }).click();
+    await page.getByRole('button', { name: 'Switch to Stunt Double' }).click();
     await page.getByRole('button', { name: 'Try a quick jump' }).click();
     await page.getByRole('button', { name: 'Play' }).click();
     const canvas = page.locator('.sd-canvas');
@@ -102,17 +101,15 @@ test.describe('project preview', () => {
   });
 });
 
-test.describe('mobile navigation', () => {
-  test('menu opens, closes with Escape, and returns focus', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'phone only');
+test.describe('hero desktop', () => {
+  test('shortcut icons jump to each section', async ({ page }) => {
     await page.goto('/');
-    const btn = page.getByRole('button', { name: 'Menu' });
-    await btn.click();
-    await expect(btn).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Work' })).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(btn).toHaveAttribute('aria-expanded', 'false');
-    await expect(btn).toBeFocused();
+    const shortcuts = page.getByRole('navigation', { name: 'Shortcuts' });
+    for (const [label, id] of [['about.txt', 'about'], ['projects', 'work'], ['education', 'education'], ['experience', 'experience'], ['contact.eml', 'contact']]) {
+      await expect(shortcuts.getByRole('link', { name: label })).toHaveAttribute('href', `#${id}`);
+    }
+    await shortcuts.getByRole('link', { name: 'experience' }).click();
+    await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeInViewport();
   });
 });
 

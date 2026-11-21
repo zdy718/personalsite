@@ -63,12 +63,21 @@
 [data-theme='diner'] .window-bar .dots i:nth-child(2) { background: var(--mustard); }
 [data-theme='diner'] .window-bar .dots i:nth-child(3) { background: var(--accent); }
 
-/* Checkerboard floor divider (replaces the three 70s stripes) */
-:root[data-theme='diner'] .stripes {
-  height: 32px;
-  background: var(--checker) 0 0 / 32px 32px;
+/* Marquee: cherry band with checkerboard trim above and below */
+:root[data-theme='diner'] .marquee {
+  background: var(--primary);
+  color: var(--surface);
+  box-shadow: none;
+  margin-block: 0;
+  border-block: 0;
+  padding-block: 14px;
+  background-image:
+    var(--checker), var(--checker);
+  background-size: 14px 14px, 14px 14px;
+  background-repeat: repeat-x;
+  background-position: 0 0, 0 100%;
 }
-:root[data-theme='diner'] .stripes i:nth-child(n) { display: none; }
+:root[data-theme='diner'] .marquee-track { background: var(--primary); border-block: 2px solid var(--line); }
 
 /* Chrome badge in the header, like a jukebox nameplate */
 :root[data-theme='diner'] .badge { background: var(--chrome); }

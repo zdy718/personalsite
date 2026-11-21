@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import '../styles/theme-diner.css';
 import '../styles/theme-drivein.css';
-import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { profile } from '../data/site';
 
@@ -47,7 +46,6 @@ const ogImage = new URL(image, Astro.site);
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
     <main id="main" tabindex="-1">
       <slot />
     </main>

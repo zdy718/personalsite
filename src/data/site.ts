@@ -38,7 +38,6 @@ export const experience: Engagement[] = [
     org: 'Mission Accomplished',
     context: 'Client project through UNL Senior Design',
     dates: 'Aug 2026 – Dec 2026',
-    label: 'Client work',
     bullets: [
       'Developed SwiftUI interfaces and iPhone–Apple Watch synchronization for a health prototype supporting self-regulation in neurodivergent children.',
       'Built FastAPI, PostgreSQL, and SQLAlchemy REST APIs for accounts, secure sessions, and simulated biometric reporting with threshold-based support prompts.',
@@ -49,7 +48,6 @@ export const experience: Engagement[] = [
     org: 'Aulick Industries',
     context: 'Client project through UNL Senior Design',
     dates: 'Jan 2026 – Jun 2026',
-    label: 'Client work',
     bullets: [
       'Built an internal fabrication parts ordering tool: employees browse a catalog, manage a cart, and submit orders.',
       'Implemented role-based access control, AWS S3 file uploads, automated email notifications, and Excel bulk updates.',
@@ -57,18 +55,22 @@ export const experience: Engagement[] = [
   },
 ];
 
-export const clientWork = [
+// What I focus on. One line each; the evidence lives in Projects and Experience.
+export const focus = [
   {
-    name: 'Mission Accomplished',
-    summary: 'A wearable health prototype that helps neurodivergent children with self-regulation, pairing an iPhone app with Apple Watch.',
-    stack: 'SwiftUI · watchOS · FastAPI · PostgreSQL',
-    dates: 'Aug – Dec 2026',
+    title: 'Full-stack web apps',
+    detail:
+      'I own features end to end: Python, FastAPI, and PostgreSQL underneath, React and TypeScript on top, and SwiftUI when a product needs to run on iPhone and Apple Watch.',
   },
   {
-    name: 'Aulick Industries',
-    summary: 'An internal ordering tool for fabrication parts with a catalog, cart, roles, file uploads, and email notifications.',
-    stack: 'Full stack · AWS S3 · Excel import',
-    dates: 'Jan – Jun 2026',
+    title: 'Interactive, data-heavy interfaces',
+    detail:
+      'Turning large or messy data into something people can explore, like 169,000+ catalogued objects searchable and rendered live in 3D.',
+  },
+  {
+    title: 'Software you can trust',
+    detail:
+      'Tests, verification, and careful review, from a solver that proves every game level can be beaten to the code reviews I lead every week.',
   },
 ];
 
@@ -86,14 +88,6 @@ export const education = {
   dates: 'Aug 2024 – Dec 2026',
   graduation: 'December 2026',
   highlights: [
-    {
-      title: 'Teaching Assistant, CSCE 231 Computer Systems Engineering',
-      detail: 'Leading weekly labs for 40+ students on C programming, GDB debugging, and code review since Aug 2025.',
-    },
-    {
-      title: 'UNL Senior Design',
-      detail: 'Two client engagements as a full-stack developer: Aulick Industries (Jan – Jun 2026) and Mission Accomplished (Aug – Dec 2026).',
-    },
     {
       title: 'Engineering Students Advisory Board, UNL College of Engineering',
       detail: 'Member since Sept 2024, helping manage the Dean’s $100,000–$250,000 annual budget across engineering clubs and organizations.',

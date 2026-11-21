@@ -1,30 +1,56 @@
 .pv { background: var(--surface); }
-.pv-panel { padding: 0 var(--s3) var(--s2); }
 
-.pv-tabs {
-  display: flex;
-  gap: var(--s2);
-  padding: var(--s3) var(--s3) var(--s3);
+/* ---------- Cascaded windows ---------- */
+/* Both windows share one grid cell. The front one sits low-left, the back one
+   high-right, so the back window's title bar and edge peek out behind. */
+.pv-stack {
+  --offset-x: 9%;
+  --offset-y: 38px;
+  display: grid;
 }
-.pv-tab {
-  flex: 1;
-  min-height: 40px;
+.pv-slot {
+  grid-area: 1 / 1;
+  position: relative;
+  transition: margin 320ms var(--ease);
+}
+.pv-slot.is-front { z-index: 2; margin: var(--offset-y) var(--offset-x) 0 0; }
+.pv-slot.is-back { z-index: 1; margin: 0 0 var(--offset-y) var(--offset-x); }
+.pv-slot.is-back .pv { filter: saturate(0.75) brightness(0.92); }
+.pv-slot.is-front .pv { box-shadow: var(--shadow), 0 18px 40px rgb(0 0 0 / 0.25); }
+
+/* The back window raises on click; the pill in its title bar is the button */
+.pv-slot.is-back { cursor: pointer; }
+.pv-slot.is-back .pv-foot { visibility: hidden; }
+.pv-raise {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  z-index: 3;
+  padding: 3px 10px;
   border: 2px solid var(--line);
-  border-radius: var(--radius-control);
-  background: var(--canvas);
+  border-radius: 999px;
+  background: var(--surface);
   color: var(--ink);
-  font: 700 0.8125rem/1.2 var(--font-mono);
-  cursor: pointer;
-  transition: background-color 160ms var(--ease), color 160ms var(--ease), box-shadow 160ms var(--ease);
-}
-.pv-tab:hover { background: var(--soft); }
-.pv-tab[aria-selected='true'] {
-  background: var(--primary);
-  color: #fff;
+  font: 700 0.75rem/1.2 var(--font-mono);
   box-shadow: 2px 2px 0 var(--line);
+  cursor: pointer;
+  transition: transform 140ms var(--ease), background-color 140ms var(--ease);
+}
+.pv-raise:hover,
+.pv-raise:focus-visible { transform: translateY(-2px); background: var(--mustard); color: var(--on-bright, var(--ink)); }
+.pv-slot.is-back:hover .pv { filter: none; }
+
+.pv-stage { margin: var(--s3) var(--s3) 0; }
+.pv-foot { padding-inline: var(--s3) !important; }
+
+@media (max-width: 767px) {
+  .pv-stack { --offset-x: 0px; --offset-y: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-slot { transition: none; }
 }
 
-/* Fixed aspect so switching tabs never changes panel height. */
+/* Fixed aspect so both windows are always the same size. */
 .pv-stage {
   position: relative;
   aspect-ratio: 16 / 10;
@@ -254,3 +280,18 @@
   .um-close { min-height: 32px; top: 8px; right: 8px; }
   .um-obj { top: calc(var(--y) * 0.9) !important; }
 }
+
+/* CRT scanlines + a soft vignette, preview screen only */
+.pv-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgb(0 0 0 / 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 0.35) 100%);
+  mix-blend-mode: multiply;
+}
+/* Controls sit above the scanlines */
+.pv-explore, .pv-loading { z-index: 3; }
