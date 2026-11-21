@@ -1,0 +1,126 @@
+/* ------------------------------------------------------------------
+   Riso Print: a zine run through a risograph. Three inks on off-white
+   paper (blue, fluoro pink, yellow), grainy texture, halftone tints, and
+   layers that land a few pixels off register.
+   Active when <html data-theme="riso">.
+------------------------------------------------------------------- */
+
+:root[data-theme='riso'] {
+  --canvas: #f6f0e1;        /* uncoated paper */
+  --surface: #fbf7ee;
+  --ink: #1d3570;           /* dense blue ink */
+  --muted: #455477;
+  --primary: #0068b5;       /* riso blue */
+  --primary-hover: #00528f;
+  --accent: #e0218a;        /* fluoro pink, darkened enough for text */
+  --pink: #ff48b0;          /* fluoro pink, full strength */
+  --mustard: #ffe14d;       /* riso yellow */
+  --sky: #a9d4f0;           /* blue at ~35% */
+  --rose: #ffb3dc;          /* pink at ~40% */
+  --soft: #fbe9c2;
+  --line: #1d3570;
+  --border: rgb(29 53 112 / 0.2);
+
+  /* Hard shadows print in pink, off register */
+  --shadow: 5px 6px 0 var(--pink);
+  --shadow-sm: 3px 4px 0 var(--pink);
+  --radius-panel: 14px;
+  --radius-control: 10px;
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.2 0 0 0 0 0.44 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Paper grain instead of the halftone dots */
+[data-theme='riso'] body {
+  background-image: var(--grain);
+  background-size: 160px 160px;
+}
+[data-theme='riso'] ::selection { background: var(--mustard); color: var(--ink); }
+
+/* Headings: a pink plate printed slightly off from the blue */
+[data-theme='riso'] h1,
+[data-theme='riso'] h2 {
+  text-shadow: 3px 2px 0 rgb(255 72 176 / 0.55);
+}
+
+/* "other things." in pink, with a misregistered blue plate and a yellow block */
+:root[data-theme='riso'] .hl {
+  color: var(--accent);
+  text-shadow: -3px 2px 0 rgb(0 104 181 / 0.35);
+  background: linear-gradient(transparent 55%, var(--mustard) 55%, var(--mustard) 90%, transparent 90%);
+  background-position: 6px 4px;
+  background-repeat: no-repeat;
+}
+
+/* Eyebrow mark: two overlapping ink circles that multiply into purple */
+[data-theme='riso'] .eyebrow::before {
+  width: 30px;
+  height: 18px;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 9px 9px, var(--pink) 8.5px, transparent 9px),
+    radial-gradient(circle at 21px 9px, #0078bf 8.5px, transparent 9px);
+  background-blend-mode: multiply;
+}
+
+/* Window bars: flat ink tints with a halftone screen over them */
+[data-theme='riso'] .window-bar {
+  background:
+    radial-gradient(rgb(255 72 176 / 0.35) 1.2px, transparent 1.6px) 0 0 / 6px 6px,
+    var(--mustard);
+}
+[data-theme='riso'] .window-bar.teal {
+  background:
+    radial-gradient(rgb(0 104 181 / 0.3) 1.2px, transparent 1.6px) 0 0 / 6px 6px,
+    var(--sky);
+}
+[data-theme='riso'] .window-bar.rose {
+  background:
+    radial-gradient(rgb(255 72 176 / 0.4) 1.2px, transparent 1.6px) 0 0 / 6px 6px,
+    var(--rose);
+}
+[data-theme='riso'] .window-bar .dots i:first-child { background: var(--pink); }
+[data-theme='riso'] .window-bar .dots i:nth-child(2) { background: var(--mustard); }
+[data-theme='riso'] .window-bar .dots i:nth-child(3) { background: #0078bf; }
+
+/* Divider: blue and pink bands that overlap into purple, under a halftone screen */
+:root[data-theme='riso'] .stripes {
+  height: 30px;
+  border-block: 0;
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(var(--canvas) 0.9px, transparent 1.4px),
+    linear-gradient(transparent 0 38%, var(--pink) 38% 100%),
+    linear-gradient(#0078bf 0 62%, transparent 62%);
+  background-size: 5px 5px, 100% 100%, 100% 100%;
+  background-blend-mode: normal, multiply, normal;
+}
+:root[data-theme='riso'] .stripes i:nth-child(n) { display: none; }
+
+/* Buttons: blue ink with a pink plate behind */
+[data-theme='riso'] .btn:hover { box-shadow: 5px 6px 0 var(--pink); }
+[data-theme='riso'] .btn:active { box-shadow: 1px 1px 0 var(--pink); }
+
+/* Header: paper strip, pink rule once you scroll */
+:root[data-theme='riso'] .site-header { background-color: var(--canvas); background-image: var(--grain); }
+:root[data-theme='riso'] .site-header.is-scrolled { border-bottom-color: var(--ink); box-shadow: 0 4px 0 var(--pink); }
+:root[data-theme='riso'] .wordmark { text-shadow: 2px 1px 0 rgb(255 72 176 / 0.6); }
+:root[data-theme='riso'] .badge { background: var(--mustard); box-shadow: 2px 3px 0 var(--pink); }
+
+/* Project screenshots get a light halftone screen, like they were printed */
+[data-theme='riso'] .card .media { position: relative; }
+[data-theme='riso'] .card .media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(rgb(255 72 176 / 0.22) 1px, transparent 1.4px) 0 0 / 4px 4px;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Highlights list: ink-dot bullets that overprint */
+:root[data-theme='riso'] .highlights li::before { border: 0; mix-blend-mode: multiply; transform: translate(2px, 1px); box-shadow: -3px -2px 0 rgb(0 104 181 / 0.35); }
+:root[data-theme='riso'] .grad-badge { background: var(--pink); color: var(--ink); }
+
+[data-theme='riso'] .site-footer { background-color: var(--soft); background-image: var(--grain); }
