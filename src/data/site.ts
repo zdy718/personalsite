@@ -26,7 +26,7 @@ export const experience: Engagement[] = [
     role: 'Teaching Assistant',
     org: 'University of Nebraska–Lincoln',
     context: 'CSCE 231, Computer Systems Engineering',
-    dates: 'Aug 2025 – Present',
+    dates: 'Aug 2025 – Dec 2026',
     quest: 'duck',
     bullets: [
       'Lead weekly labs for 40+ students covering C programming, GDB debugging, and code review.',

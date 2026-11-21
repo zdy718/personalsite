@@ -4,15 +4,13 @@ import QuestSticker from './QuestSticker.astro';
 ---
 
 <ol class="xp">
-  {experience.map((e, i) => (
-    <li class="ticket" data-reveal>
+  {experience.map((e) => (
+    <li class="xp-card" data-reveal>
       {e.quest === 'duck' && (
         <QuestSticker quest="duck" label="Ask the duck" icon="🦆" tilt={4} color="mustard" class="xp-sticker" />
       )}
-      <div class="stub">
-        <span class="admit" aria-hidden="true">Admit one</span>
+      <div class="side">
         <p class="when">{e.dates}</p>
-        <span class="no" aria-hidden="true">No. {String(i + 1).padStart(3, '0')}</span>
       </div>
       <div class="what">
         <h3>
@@ -32,61 +30,36 @@ import QuestSticker from './QuestSticker.astro';
 <style>
   .xp { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s6); }
 
-  .ticket {
+  .xp-card {
     position: relative;
     display: grid;
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 236px 1fr;
     background: var(--surface);
     border: 2px solid var(--line);
     border-radius: var(--radius-panel);
     box-shadow: var(--shadow);
   }
 
-  /* Tear-off stub with a perforated edge */
-  .stub {
-    position: relative;
+  /* Coloured side panel holding the dates */
+  .side {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: var(--s2);
     padding: var(--s5);
     background: var(--mustard);
     color: var(--on-bright, var(--ink));
-    border-right: 2px dashed var(--line);
+    border-right: 2px solid var(--line);
     border-radius: calc(var(--radius-panel) - 2px) 0 0 calc(var(--radius-panel) - 2px);
     text-align: center;
-  }
-  /* Notches punched out where the perforation meets the edges */
-  .stub::before,
-  .stub::after {
-    content: '';
-    position: absolute;
-    right: -14px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    background: var(--canvas);
-  }
-  .stub::before { top: -14px; clip-path: inset(50% 0 0 0); }
-  .stub::after { bottom: -14px; clip-path: inset(0 0 50% 0); }
-
-  .admit {
-    font: 700 0.6875rem/1 var(--font-mono);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    padding-bottom: var(--s2);
-    border-bottom: 2px solid currentColor;
   }
   .when {
     margin: 0;
     font: 700 0.9375rem/1.35 var(--font-mono);
-    text-wrap: balance;
+    white-space: nowrap;
   }
-  .no { font: 700 0.6875rem/1 var(--font-mono); letter-spacing: 0.1em; opacity: 0.75; }
 
   .what { padding: var(--s6); }
-  .ticket :global(.xp-sticker) { position: absolute; z-index: 2; top: -16px; right: 24px; }
+  .xp-card :global(.xp-sticker) { position: absolute; z-index: 2; top: -16px; right: 24px; }
   h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
   .org { font-weight: 600; color: var(--muted); }
   .ctx {
@@ -100,22 +73,15 @@ import QuestSticker from './QuestSticker.astro';
   li li::marker { color: var(--accent); }
 
   @media (max-width: 767px) {
-    .ticket { grid-template-columns: 1fr; }
-    .stub {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--s4) var(--s5);
+    .xp-card { grid-template-columns: 1fr; }
+    .side {
+      justify-content: flex-start;
+      padding: var(--s3) var(--s5);
       border-right: 0;
-      border-bottom: 2px dashed var(--line);
+      border-bottom: 2px solid var(--line);
       border-radius: calc(var(--radius-panel) - 2px) calc(var(--radius-panel) - 2px) 0 0;
+      text-align: left;
     }
-    .admit { padding-bottom: 0; border-bottom: 0; }
-    .stub::before,
-    .stub::after { top: auto; right: auto; bottom: -14px; }
-    .stub::before { left: -14px; clip-path: inset(0 0 0 50%); }
-    .stub::after { right: -14px; clip-path: inset(0 50% 0 0); }
     .what { padding: var(--s5); }
   }
 </style>
