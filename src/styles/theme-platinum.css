@@ -1,0 +1,180 @@
+/* ------------------------------------------------------------------
+   Platinum OS: a late-90s desktop. Gray chrome, pinstriped title bars,
+   beveled buttons, square corners, a menu bar for the header, and a
+   barber-pole progress bar as the divider.
+   Active when <html data-theme="platinum">.
+------------------------------------------------------------------- */
+@import '@fontsource/pixelify-sans/latin-500.css';
+@import '@fontsource/pixelify-sans/latin-700.css';
+
+:root[data-theme='platinum'] {
+  --canvas: #d4d4d8;        /* desktop */
+  --surface: #f5f5f5;       /* window body */
+  --ink: #141414;
+  --muted: #4a4a4f;
+  --primary: #2f52a8;       /* selection blue */
+  --primary-hover: #243f85;
+  --accent: #2f52a8;
+  --mustard: #ffd84d;       /* sticky-note yellow */
+  --sky: #ccccff;           /* highlight lavender */
+  --rose: #ffcfcf;
+  --soft: #e6e6e9;
+  --line: #141414;
+  --border: rgb(20 20 20 / 0.2);
+
+  --font-pixel: 'Pixelify Sans', var(--font-mono);
+  --radius-panel: 5px;
+  --radius-control: 5px;
+  --shadow: 3px 3px 0 rgb(20 20 20 / 0.55);
+  --shadow-sm: 2px 2px 0 rgb(20 20 20 / 0.55);
+
+  --bevel: inset 1px 1px 0 #fff, inset -1px -1px 0 #8a8a8f;
+  --bevel-in: inset 1px 1px 0 #8a8a8f, inset -1px -1px 0 #fff;
+  --pinstripe: repeating-linear-gradient(180deg, #f2f2f4 0 1px, #a8a8ae 1px 2px, #f2f2f4 2px 3px);
+  --barber: repeating-linear-gradient(-45deg, var(--primary) 0 10px, var(--sky) 10px 20px);
+}
+
+/* A faint dithered desktop pattern */
+[data-theme='platinum'] body {
+  background-image:
+    linear-gradient(45deg, rgb(0 0 0 / 0.035) 25%, transparent 25% 75%, rgb(0 0 0 / 0.035) 75%),
+    linear-gradient(45deg, rgb(0 0 0 / 0.035) 25%, transparent 25% 75%, rgb(0 0 0 / 0.035) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+}
+[data-theme='platinum'] ::selection { background: var(--primary); color: #fff; }
+
+/* ---------- Windows ---------- */
+[data-theme='platinum'] .window { box-shadow: var(--shadow), var(--bevel); }
+[data-theme='platinum'] .window-bar,
+[data-theme='platinum'] .window-bar.teal,
+[data-theme='platinum'] .window-bar.rose {
+  position: relative;
+  min-height: 30px;
+  padding: 5px 10px;
+  background: var(--pinstripe), #dedee2;
+  background-clip: content-box, border-box;
+  font-family: var(--font-pixel);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+/* Title sits in a gap cut out of the pinstripes */
+[data-theme='platinum'] .window-bar > span:last-child {
+  margin-inline: auto;
+  padding: 0 10px;
+  background: #dedee2;
+  line-height: 20px;
+}
+/* Square close / zoom / collapse boxes */
+[data-theme='platinum'] .window-bar .dots { padding-right: 6px; background: #dedee2; gap: 4px; }
+[data-theme='platinum'] .window-bar .dots i,
+[data-theme='platinum'] .window-bar .dots i:first-child {
+  width: 13px;
+  height: 13px;
+  border-radius: 1px;
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, #fff, #b8b8bd);
+}
+
+/* ---------- Buttons: raised bevel, pressed bevel ---------- */
+[data-theme='platinum'] .btn {
+  border-width: 2px;
+  box-shadow: var(--bevel), var(--shadow-sm);
+}
+[data-theme='platinum'] .btn:hover { transform: none; box-shadow: var(--bevel), var(--shadow-sm); }
+[data-theme='platinum'] .btn:active { transform: translate(1px, 1px); box-shadow: var(--bevel-in); }
+[data-theme='platinum'] .btn-secondary { background: linear-gradient(180deg, #fafafa, #d9d9dd); }
+[data-theme='platinum'] .btn-primary {
+  background: linear-gradient(180deg, #4a6fc7, var(--primary));
+  box-shadow: inset 1px 1px 0 rgb(255 255 255 / 0.45), inset -1px -1px 0 rgb(0 0 0 / 0.35), var(--shadow-sm);
+  /* the "default button" ring */
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+[data-theme='platinum'] .btn-primary:hover { background: linear-gradient(180deg, #3e62b8, var(--primary-hover)); }
+[data-theme='platinum'] .btn-primary:focus-visible { outline-color: var(--primary); }
+
+[data-theme='platinum'] .chip {
+  border-radius: 3px;
+  border-width: 1px;
+  background: linear-gradient(180deg, #fff, #e2e2e6);
+  box-shadow: var(--bevel);
+}
+
+/* ---------- Hero ---------- */
+/* "other things." looks like selected text */
+:root[data-theme='platinum'] .hl {
+  background: var(--primary);
+  color: #fff;
+  padding-inline: 6px;
+}
+:root[data-theme='platinum'] .status { border-radius: 4px; box-shadow: var(--bevel); }
+
+/* ---------- Divider: indeterminate progress bar ---------- */
+:root[data-theme='platinum'] .stripes {
+  height: 26px;
+  border-block: 2px solid var(--line);
+  background: var(--barber);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.4), inset 0 -3px 0 rgb(0 0 0 / 0.2);
+}
+:root[data-theme='platinum'] .stripes i:nth-child(n) { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme='platinum'] .stripes { background-size: 28.28px 28.28px; animation: barber 1.2s linear infinite; }
+}
+@keyframes barber { to { background-position: 28.28px 0; } }
+
+/* Eyebrow: a tiny progress bar */
+[data-theme='platinum'] .eyebrow::before {
+  width: 40px;
+  height: 11px;
+  border-radius: 2px;
+  border-width: 1px;
+  background: var(--barber);
+  background-size: 14px 14px;
+}
+
+/* ---------- Header as a menu bar ---------- */
+:root[data-theme='platinum'] .site-header {
+  background: linear-gradient(180deg, #fbfbfb, #dcdce0);
+  border-bottom: 2px solid var(--line);
+}
+/* Name stays in a non-pixel face: in Pixelify, Z reads like 2 */
+:root[data-theme='platinum'] .wordmark { font-family: var(--font-mono); font-weight: 700; font-size: 1.125rem; letter-spacing: -0.02em; }
+:root[data-theme='platinum'] .wordmark:hover { color: var(--primary); }
+:root[data-theme='platinum'] .badge {
+  background: linear-gradient(135deg, #fff, #c4c4ca);
+  box-shadow: var(--bevel), 2px 2px 0 rgb(20 20 20 / 0.55);
+}
+:root[data-theme='platinum'] .nav a {
+  min-height: 40px;
+  border-radius: 0;
+  font-family: var(--font-pixel);
+  font-weight: 500;
+  font-size: 1rem;
+}
+/* Menu items invert on hover, like a real menu */
+:root[data-theme='platinum'] .nav a:hover { background: var(--primary); color: #fff; }
+html:root[data-theme='platinum'] .nav .resume-link {
+  color: #fff;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #4a6fc7, var(--primary));
+  box-shadow: inset 1px 1px 0 rgb(255 255 255 / 0.45), 2px 2px 0 rgb(20 20 20 / 0.55);
+}
+:root[data-theme='platinum'] .take { font-family: var(--font-pixel); border-radius: 2px; }
+
+/* ---------- Stickers become little desktop alerts ---------- */
+[data-theme='platinum'] .quest-sticker {
+  border-radius: 4px;
+  box-shadow: var(--bevel), 2px 2px 0 rgb(20 20 20 / 0.55);
+  font-family: var(--font-pixel);
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+/* Education highlights: square "radio buttons" become checkboxes */
+:root[data-theme='platinum'] .highlights li { border-radius: 4px; box-shadow: var(--bevel); }
+:root[data-theme='platinum'] .highlights li::before { border-radius: 2px; box-shadow: var(--bevel); }
+:root[data-theme='platinum'] .grad-badge { border-radius: 3px; background: var(--mustard); font-family: var(--font-pixel); font-weight: 500; }
+
+[data-theme='platinum'] .site-footer { background: linear-gradient(180deg, #e8e8eb, #d0d0d5); }
